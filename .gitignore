@@ -1,0 +1,5 @@
+*.obj
+*.exe
+Makefile
+out.bin
+main.cpp
