@@ -32,8 +32,7 @@ std::string generateError(char symbol) {
 std::vector<uint8_t> base64::encode(const std::string& b64) {
     std::vector<uint8_t> encoded((size_t)ceil((b64.size() * 6) / 8));
 
-    size_t bit = 0;
-    for (size_t i = 0; i < b64.size(); i++) {
+    for (size_t i = 0, bit = 0; i < b64.size(); i++) {
         bool cont = false;
         for (size_t j = 0; j < sizeof(keys); j++) {
             if (b64[i] == keys[j]) {
@@ -58,4 +57,25 @@ std::vector<uint8_t> base64::encode(const std::string& b64) {
     }
 
     return std::move(encoded);
+}
+
+std::string base64::decode(const std::vector<uint8_t>& b64) {
+    std::string decoded;
+
+    for (size_t i = 0, bit = 0; i < b64.size();) {
+        int ki;
+
+        if (i != (b64.size() - i)) ki = ((*(uint16_t*)(&b64[i]) >> bit) & 0b111111);
+        else ki = ((*(uint8_t*)(&b64[i]) >> bit) & 0b111111);
+
+        decoded.push_back(keys[ki]);
+
+        bit += 6;
+        if (bit >= 8) {
+            bit -= 8;
+            i++;
+        }
+    }
+
+    return std::move(decoded);
 }
